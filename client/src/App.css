@@ -269,7 +269,13 @@ cursor: pointer;
   border-radius: 50%;
   margin:1rem
 }
-
+.button__outer{
+  width:40rem;
+  height:fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
 
 
 

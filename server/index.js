@@ -23,7 +23,6 @@ dotenv.config();
 
 app.get('/get-each',(req,res)=>{
     var roll=req.query.roll;
-    console.log(db)
     for(var i=0;i<db.length;i++)
     {
         if(db[i].rollno==roll)
@@ -88,6 +87,52 @@ app.get('/get-each-info',(req,res)=>{
     }
     res.send([]);
 })
+
+
+
+
+app.post('/update-each',(req,res)=>{
+    var oldRoll=req.body.oldRoll;
+    var roll=req.body.roll
+    var name=req.body.name
+    // console.log(name,roll,oldRoll)
+    var address=req.body.address
+    var social=req.body.social
+    var english=req.body.english
+    var chemistry=req.body.chemistry
+    var physics=req.body.physics
+    var math=req.body.math
+    var avg=req.body.avg
+    var total=req.body.total
+    var grade=req.body.grade;
+    for(var i=0;i<db.length;i++)
+    {
+        console.log(db[i])
+        if(db[i].rollno===oldRoll)
+        {
+            db[i].rollno=roll;
+            db[i].name=name;
+            db[i].address=address;
+            db[i].social=social;
+            db[i].english=english;
+            db[i].chemistry=chemistry;
+            db[i].physics=physics;
+            db[i].math=math;
+            db[i].avg=avg;
+            db[i].total=total;
+            db[i].grade=grade;
+            res.send(true)
+            break;
+        }
+    }
+    fs.writeFile("./store/db.json",JSON.stringify(db),(err)=>{
+        if(err) throw err;
+        res.send(false)
+    })
+    res.send(true)
+})
+
+
 
 app.post('/post-all',(req,res)=>{
     var rollno=req.body.rollno;

@@ -7,8 +7,8 @@ import img1 from "./store/face1.jpg";
 import img2 from "./store/face2.jpg";
 import img3 from "./store/face3.jpg";
 import img4 from "./store/face4.jpg";
-
-
+import edit from './store/edit.svg';
+import back from './store/back.svg';
 
 const App = () => {
 
@@ -22,12 +22,26 @@ const App = () => {
   const[chemistry,setChemistry]=useState(-99999)
   const[math,setMath]=useState(-99999)
 
+
+  const[uroll,setuRoll]=useState(-99999)
+  const[uname,setuName]=useState("")
+  const[uaddress,setuAddress]=useState("")
+  const[usocial,setuSocial]=useState(-99999)
+  const[uenglish,setuEnglish]=useState(-99999)
+  const[uphysics,setuPhysics]=useState(-99999)
+  const[uchemistry,setuChemistry]=useState(-99999)
+  const[umath,setuMath]=useState(-99999)
+
+
+
+
   const[loading,setloading]=useState(true)
   const[all,setAll]=useState([])
   const[infoEach,setInfoEach]=useState([])
   const[screen,setScreen]=useState({
                                     info:"none",
-                                    all:"flex"
+                                    all:"flex",
+                                    edit:"none"
   });
   
 
@@ -219,7 +233,7 @@ const App = () => {
       else
       {
         setInfoEach(res.data)
-        setScreen({info:"flex",all:"none"});
+        setScreen({info:"flex",all:"none",edit:'none'});
       }
       
     })
@@ -227,6 +241,122 @@ const App = () => {
   }
 
 
+
+
+  function updateJson()
+  {
+    var flag=0;
+    if(uroll!==-99999)
+    {
+      Axios.get('http://localhost:3001/get-each',
+      {
+        params:{
+          roll:uroll,
+        }
+          
+      }).then((res)=>{
+        if(res.data==="exist")
+        {
+          alert("Already exist");
+          return;
+        }
+      })
+    }
+    if(uname==="")
+    {
+      setuName(infoEach.name);
+    }
+    if(uaddress==="")
+    {
+      setuAddress(infoEach.address)
+    }
+    if(usocial===-99999)
+    {
+      setuSocial(infoEach.social)
+    }
+    if(uphysics===-99999)
+    {
+      setuPhysics(infoEach.physics)
+    }
+    if(uchemistry===-99999)
+    {
+      setuChemistry(infoEach.chemistry)
+    }
+    if(uenglish===-99999)
+    {
+      setuEnglish(infoEach.english)
+    }
+    if(umath===-99999)
+    {
+      setuMath(infoEach.math)
+    }
+    var social2=parseInt(usocial)
+    var english2=parseInt(uenglish)
+    var chemistry2=parseInt(uchemistry)
+    var physics2=parseInt(uphysics)
+    var math2=parseInt(umath)
+
+
+    var avg2=(social2+english2+chemistry2+physics2+math2)/5;
+    var grade2="F"
+    if(avg2>90)
+    {
+      grade2="A";
+    }
+    else if(avg2<=90 && avg2>=80)
+    {
+      grade2="B";
+    }
+    else if(avg2<=79 && avg2>=70)
+    {
+      grade2="C";
+    }
+    else if(avg2<=69 && avg2>=60)
+    {
+      grade2="D";
+    }
+    else if(avg2<=59 && avg2>=50)
+    {
+      grade2="E";
+    }
+    else if(avg2<=49 && avg2>=33)
+    {
+      grade2="E-";
+    }
+    else{
+      grade2="F";
+    }
+    var total2=(social2+english2+chemistry2+physics2+math2)
+    Axios.post('http://localhost:3001/update-each',
+    {
+      oldRoll:infoEach.rollno,
+      roll:parseInt(uroll),
+      name:uname,
+      address:uaddress,
+      social:social2,
+      english:english2,
+      chemistry:chemistry2,
+      physics:physics2,
+      math:math2,
+      avg:avg2,
+      total:total2,
+      grade:grade2
+
+    }).then((res)=>{
+      if(res.data===true)
+      {
+        alert("Data updated successfully!!");
+        getter();
+        setScreen({info:"none",all:"flex",edit:'none'});
+        return;
+      }
+      else
+      {
+        alert("Failed to upload!!");
+        return;
+      }
+    });
+  } 
 
   return (
     <div className="outer">
@@ -300,10 +430,97 @@ const App = () => {
             </div>
 
           </div>
-          <div className='button' onClick={()=>{setScreen({info:"none",all:"flex"})}}>
-            Close
+          <div className='button__outer'>
+            <div className='button' onClick={()=>{setScreen({info:"none",all:"flex",edit:"none"})}}>
+              Close
+            </div>
+            <div className='button' onClick={()=>{setScreen({info:"none",all:"none",edit:"flex"})}}>
+              <img src={edit} style={{width:"30px",height:"30px",color:"white"}}/>
+            </div>
           </div>
         </div>
+
+
+        <div className='inner__info'style={{display:screen.edit}}>
+        
+        <div className="body__right" >
+            <div className="name-outer" style={{marginTop:"1.8rem"}}>
+                <div className="name-label">
+                    Roll No.{'\u00A0'}<i style={{color:"#EF4B4D",width:"10px",height:"10px"}} class="far fa-address-book"></i>
+                </div>
+                <input onChange={(e)=>{setuRoll(e.target.value)}}  type="number" placeholder={infoEach.rollno} className="name-field"  required='required'/>
+            </div>
+            <div className="name-outer" style={{marginTop:"0.5rem"}}>
+                <div className="name-label">
+                    Name{'\u00A0'}<i style={{color:"#EF4B4D",width:"10px",height:"10px"}} class="far fa-address-book"></i>
+                </div>
+                <input onChange={(e)=>{setuName(e.target.value)}} type="text" placeholder={infoEach.name} className="name-field"  required='required'/>
+            </div>
+            <div className="name-outer" style={{marginTop:"0.5rem"}}>
+                <div className="name-label">
+                    Address{'\u00A0'}<i style={{color:"#EF4B4D",width:"10px",height:"10px"}} class="far fa-address-book"></i>
+                </div>
+                <input onChange={(e)=>{setuAddress(e.target.value)}} type="text" placeholder={infoEach.address} className="name-field"  required='required'/>
+            </div>
+            <div className='name-outer-outer'>
+              <div className="name-outer2" style={{marginTop:"0.5rem"}}>
+                <div className="name-label">
+                    Social{'\u00A0'}<i style={{color:"#EF4B4D",width:"10px",height:"10px"}} class="far fa-address-book"></i>
+                </div>
+                <input min="0" onChange={(e)=>{setuSocial(e.target.value)}} type="number" placeholder={infoEach.social} className="name-field"  required='required'/>
+              </div>
+              <div className="name-outer2" style={{marginTop:"0.5rem"}}>
+                <div className="name-label">
+                    English{'\u00A0'}<i style={{color:"#EF4B4D",width:"10px",height:"10px"}} class="far fa-address-book"></i>
+                </div>
+                <input min="0" onChange={(e)=>{setuEnglish(e.target.value)}} type="number" placeholder={infoEach.english} className="name-field"  required='required'/>
+              </div>
+            </div>
+            <div className='name-outer-outer'>
+              <div className="name-outer2" style={{marginTop:"0.5rem"}}>
+                <div className="name-label">
+                    Chemistry{'\u00A0'}<i style={{color:"#EF4B4D",width:"10px",height:"10px"}} class="far fa-address-book"></i>
+                </div>
+                <input min="0" onChange={(e)=>{setuChemistry(e.target.value)}} type="number" placeholder={infoEach.chemistry} className="name-field"  required='required'/>
+              </div>
+              <div className="name-outer2" style={{marginTop:"0.5rem"}}>
+                <div className="name-label">
+                    Physics{'\u00A0'}<i style={{color:"#EF4B4D",width:"10px",height:"10px"}} class="far fa-address-book"></i>
+                </div>
+                <input min="0" onChange={(e)=>{setuPhysics(e.target.value)}} type="number" placeholder={infoEach.physics} className="name-field"  required='required'/>
+              </div>
+            </div>
+            <div className='name-outer-outer'>
+              <div className="name-outer2" style={{marginTop:"0.5rem"}}>
+                <div className="name-label">
+                    Maths{'\u00A0'}<i style={{color:"#EF4B4D",width:"10px",height:"10px"}} class="far fa-address-book"></i>
+                </div>
+                <input min="0" onChange={(e)=>{setuMath(e.target.value)}} type="number" placeholder={infoEach.math} className="name-field"  required='required'/>
+              </div>
+            </div>
+            <div className='name-outer-outer'>
+              <div className='button' onClick={()=>{updateJson()}}>
+                UPDATE
+              </div>
+              <div className='button' onClick={()=>{setScreen({info:"flex",all:"none",edit:"none"})}}>
+              <img src={back} style={{width:"19px",height:"19px",padding:"5px",color:"white"}}/>
+              </div>
+            </div>
+          </div>
+            
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
         <div className="body" style={{display:screen.all}}>
 
 
